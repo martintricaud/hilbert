@@ -47,6 +47,8 @@
 pub mod fast_hilbert {
     use num::BigUint;
     use crate::interleaver::Interleaver;
+    use num_traits::Num;
+    use wasm_bindgen::prelude::*;
 
     /// Convert a Hilbert distance (index) stored in a BigUint into a transposed matrix, 
     /// where the bits are distributed among many integers in an array.
@@ -337,6 +339,17 @@ pub mod fast_hilbert {
         index
     }
 
+    #[wasm_bindgen]
+    pub fn hilbert_axes_wasm_fromStr(hilbert_index:String, bits: usize, dimensions:usize) -> Vec<u32> {
+        return hilbert_axes(&BigUint::from_str_radix(&hilbert_index,10).unwrap(),bits,dimensions);
+    }
+    
+    #[wasm_bindgen]
+    //for now the wasm binding doesnt inclue the interleaver option
+    pub fn hilbert_index_wasm_toStr(hilbert_axes: &[u32], bits: usize) -> String {
+        return BigUint::to_str_radix(&hilbert_index(hilbert_axes, bits, None),10);
+    }
+
 }
 
 #[cfg(test)]
@@ -345,7 +358,6 @@ mod tests {
     use std::ops::Sub;
 
     #[allow(unused_imports)]
-    use spectral::prelude::*;
     use super::fast_hilbert;
 
    #[test]
@@ -353,8 +365,8 @@ mod tests {
         let big : BigUint = 329_u32.into(); // 329 = 256 + 64 + 8 + 1 = 0000101001001 (high to low) or 1001001010000 (low to high)
         let actual_bit_array = fast_hilbert::unpack_big_integer(&big, 12);
         let expected_bit_array : Vec<u8> = vec![1,0,0,1,0,0,1,0,1,0,0,0];
-        asserting!("Correct number of bits").that(&actual_bit_array.len()).is_equal_to(12);
-        asserting!("Correct ordering of bits").that(&actual_bit_array).is_equal_to(expected_bit_array);
+        assert_eq!(actual_bit_array.len(),12,"Correct number of bits");
+        assert_eq!(actual_bit_array,expected_bit_array,"Correct ordering of bits");
     }
 
     #[test]
@@ -367,7 +379,7 @@ mod tests {
         let gray_code : BigUint = 25676_u32.into();
         let actual_axes = fast_hilbert::uninterleave(&gray_code, 5, 3, true);
         let expected_axes : Vec<u32> = vec![17, 24, 6];
-        asserting("Correct uninterleave result").that(&actual_axes).is_equal_to(expected_axes);
+        assert_eq!(actual_axes,expected_axes,"Correct uninterleave result");
     }
 
     #[test]
@@ -380,7 +392,7 @@ mod tests {
         let gray_code : BigUint = 8_u32.into();
         let actual_axes = fast_hilbert::uninterleave(&gray_code, 3, 2, true);
         let expected_axes : Vec<u32> = vec![2, 0];
-        asserting("Correct uninterleave result").that(&actual_axes).is_equal_to(expected_axes);
+        assert_eq!(actual_axes,expected_axes,"Correct uninterleave result");
     }
 
     #[test]
@@ -391,7 +403,7 @@ mod tests {
         let axes : Vec<u32> = vec![17, 24, 6];
         let actual = fast_hilbert::untranspose(&axes, 5, None);
         let expected : BigUint = 25676_u32.into();
-        asserting("Correct untranspose result").that(&actual).is_equal_to(expected);
+        assert_eq!(actual,expected,"Correct untranspose result");
     }
 
     #[test]
@@ -402,7 +414,7 @@ mod tests {
         let axes : Vec<u32> = vec![17, 24, 6];
         let actual = fast_hilbert::interleave_be(&axes, 5, None);
         let expected : Vec<u8> = vec![100,76];
-        asserting("Correct interleave result").that(&actual).is_equal_to(expected);
+        assert_eq!(actual,expected,"Correct interleave result");
     }
 
     fn abs_difference<T: Sub<Output = T> + Ord>(x: T, y: T) -> T {
@@ -465,8 +477,10 @@ mod tests {
             let expected_hilbert_index : BigUint = i.into();
             let coordinates = fast_hilbert::hilbert_axes(&expected_hilbert_index, bits, dimensions);
             let actual_hilbert_index = fast_hilbert::hilbert_index(&coordinates, bits, None);
-
-            asserting(&format!("Invertible for i = {}", i)).that(&actual_hilbert_index).is_equal_to(expected_hilbert_index);
+            assert_eq!(actual_hilbert_index,expected_hilbert_index);
+            // asserting(&format!("Invertible for i = {}", i))
+            //     .that(&actual_hilbert_index)
+            //     .is_equal_to(expected_hilbert_index);
             previous = match previous {
                 None => Some((coordinates.clone(), None)),
                 Some((previous_coordinates, None)) => {
@@ -487,8 +501,13 @@ mod tests {
                     match verify_difference(&coordinates, &previous_coordinates) {
                         Ok(changed_dim) => {
                             if previous_changed_dim == changed_dim {
-                                asserting(&format!("Dimension {} changed more than thrice in a row at i = {}", previous_changed_dim, i))
-                                    .that(&same_dimension_changed_thrice).is_equal_to(false);
+                                assert_eq!(same_dimension_changed_thrice,false);
+                                // asserting(&format!(
+                                //     "Dimension {} changed more than thrice in a row at i = {}",
+                                //     previous_changed_dim, i
+                                // ))
+                                // .that(&same_dimension_changed_thrice)
+                                // .is_equal_to(false);
                                 if same_dimension_changed_twice {
                                     same_dimension_changed_thrice = true;
                                 }
@@ -503,7 +522,10 @@ mod tests {
                             Some((coordinates, Some(changed_dim)))
                         },
                         Err(msg) => {
-                            asserting(&format!("Error: {} for Hilbert index = {}", msg, i)).that(&true).is_equal_to(false);
+                            assert_eq!(true,false);
+                            // asserting(&format!("Error: {} for Hilbert index = {}", msg, i))
+                            //     .that(&true)
+                            //     .is_equal_to(false);
                             panic!("Should never reach this line");
                         }
                     }
