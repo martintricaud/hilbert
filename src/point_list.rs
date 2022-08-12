@@ -4,8 +4,9 @@
 //! to code those values without losing precision, then translate and scale those values
 //! in the process of creating `Points`. `Points` created in this way are guaranteed
 //! to be acceptable to the **Hilbert Curve** transformation.
-use super::normalize::{FloatDataRange, IntegerDataRange};
+
 use super::point::Point;
+use super::normalize::{FloatDataRange, IntegerDataRange};
 
 /// Take unnormalized `i32` data, normalize it, and create Point objects
 /// (which hold unsigned values).
@@ -18,12 +19,7 @@ use super::point::Point;
 ///                         otherwise use the minimum number of bits required to faithfully represent the full range of data.
 ///    - **return** - A tuple holding a Vec of Points whose coordinate values have been normalized and optionally scaled,
 ///                   and the number of bits used to represent each dimension. (The number of bots used must be fed to the Hilbert transformation.)
-pub fn make_points_i32<I>(
-    points: &[I],
-    starting_id: usize,
-    range_option: Option<IntegerDataRange>,
-    bits_allocated: Option<usize>,
-) -> (Vec<Point>, usize)
+pub fn make_points_i32<I>(points: &[I],starting_id: usize,range_option: Option<IntegerDataRange>,bits_allocated: Option<usize>) -> (Vec<Point>, usize)
 // The "for<'a>" below is "higher-ranked lifetime" notation. Got it from stackoverflow. Confused about what it does but it is needed!
 where
     for<'a> &'a I: IntoIterator<Item = &'a i32>,
@@ -127,8 +123,7 @@ mod tests {
         for i in 0..3 {
             let expected_point = &expected_points[i];
             let actual_point = &actual_points[i];
-            assert_eq!(expected_point.are_coordinates_identical(actual_point), true);
-            //asserting(&format!("For point {:?}", expected_point)).that(&expected_point.are_coordinates_identical(actual_point)).is_equal_to(true);
+            assert_eq!(expected_point.are_coordinates_identical(actual_point), true, "For point {:?}", expected_point);
         }
     }
 
