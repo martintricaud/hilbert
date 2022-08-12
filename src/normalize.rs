@@ -304,8 +304,7 @@ mod tests {
         ];
         for (n, expected) in in_out_pairs {
             let actual = super::smallest_power_of_two(n);
-            assert_eq!(actual, expected);
-            //asserting(&format!("n = {}, actual = {}, expected = {}", n, actual, expected)).that(&actual).is_equal_to(expected);
+            assert_eq!(actual, expected,"n = {}, actual = {}, expected = {}", n, actual, expected);
         }
     }
 
