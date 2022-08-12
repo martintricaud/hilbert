@@ -19,8 +19,8 @@ use super::permutation::Permutation;
 /// # Examples
 ///
 /// ```
-///         use crate::hilbert::point::Point;
-///         use crate::hilbert::point_list;
+///         use crate::hilbert_wasm::point::Point;
+///         use crate::hilbert_wasm::point_list;
 /// 
 ///         // 1. Create two 3-D points and get the square of the distance between them.
 ///         let p1 = Point::new(0, &[3, 4, 5]);

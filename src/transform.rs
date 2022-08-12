@@ -477,10 +477,7 @@ mod tests {
             let expected_hilbert_index : BigUint = i.into();
             let coordinates = fast_hilbert::hilbert_axes(&expected_hilbert_index, bits, dimensions);
             let actual_hilbert_index = fast_hilbert::hilbert_index(&coordinates, bits, None);
-            assert_eq!(actual_hilbert_index,expected_hilbert_index);
-            // asserting(&format!("Invertible for i = {}", i))
-            //     .that(&actual_hilbert_index)
-            //     .is_equal_to(expected_hilbert_index);
+            assert_eq!(actual_hilbert_index,expected_hilbert_index, "Invertible for i = {}", i);
             previous = match previous {
                 None => Some((coordinates.clone(), None)),
                 Some((previous_coordinates, None)) => {
@@ -501,13 +498,7 @@ mod tests {
                     match verify_difference(&coordinates, &previous_coordinates) {
                         Ok(changed_dim) => {
                             if previous_changed_dim == changed_dim {
-                                assert_eq!(same_dimension_changed_thrice,false);
-                                // asserting(&format!(
-                                //     "Dimension {} changed more than thrice in a row at i = {}",
-                                //     previous_changed_dim, i
-                                // ))
-                                // .that(&same_dimension_changed_thrice)
-                                // .is_equal_to(false);
+                                assert_eq!(same_dimension_changed_thrice,false,"Dimension {} changed more than thrice in a row at i = {}",previous_changed_dim, i);
                                 if same_dimension_changed_twice {
                                     same_dimension_changed_thrice = true;
                                 }
@@ -522,10 +513,7 @@ mod tests {
                             Some((coordinates, Some(changed_dim)))
                         },
                         Err(msg) => {
-                            assert_eq!(true,false);
-                            // asserting(&format!("Error: {} for Hilbert index = {}", msg, i))
-                            //     .that(&true)
-                            //     .is_equal_to(false);
+                            assert_eq!(true,false,"Error: {} for Hilbert index = {}", msg, i);
                             panic!("Should never reach this line");
                         }
                     }
@@ -560,7 +548,7 @@ mod tests {
         for i in 0..num_points {
             let hilbert_index : BigUint = i.into();
             let coordinates = fast_hilbert::hilbert_axes(&hilbert_index, bits, dimensions);
-            asserting(&format!("Hilbert Index = {}. Expected {:?}. Actual {:?}", i, expected[i], coordinates)).that(&coordinates).is_equal_to(expected[i].clone());
+            assert_eq!(coordinates,expected[i].clone(),"Hilbert Index = {}. Expected {:?}. Actual {:?}", i, expected[i], coordinates)
         }
     }
 
@@ -572,7 +560,7 @@ mod tests {
         let hilbert_index : BigUint = index.into();
         let actual_point = fast_hilbert::hilbert_axes(&hilbert_index, bits, dimensions);
         let expected_point = vec![2,2];
-        asserting(&format!("Hilbert Index = {}. Expected {:?}. Actual {:?}", index, expected_point, actual_point)).that(&actual_point).is_equal_to(expected_point);
+        assert_eq!(actual_point,expected_point,"Hilbert Index = {}. Expected {:?}. Actual {:?}", index, expected_point, actual_point)
     }
 
     
