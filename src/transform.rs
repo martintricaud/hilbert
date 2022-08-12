@@ -340,13 +340,13 @@ pub mod fast_hilbert {
     }
 
     #[wasm_bindgen]
-    pub fn hilbert_axes_wasm_fromStr(hilbert_index:String, bits: usize, dimensions:usize) -> Vec<u32> {
+    pub fn hilbert_axes_wasm_from_str(hilbert_index:String, bits: usize, dimensions:usize) -> Vec<u32> {
         return hilbert_axes(&BigUint::from_str_radix(&hilbert_index,10).unwrap(),bits,dimensions);
     }
     
     #[wasm_bindgen]
     //for now the wasm binding doesnt inclue the interleaver option
-    pub fn hilbert_index_wasm_toStr(hilbert_axes: &[u32], bits: usize) -> String {
+    pub fn hilbert_index_wasm_to_str(hilbert_axes: &[u32], bits: usize) -> String {
         return BigUint::to_str_radix(&hilbert_index(hilbert_axes, bits, None),10);
     }
 

@@ -13,11 +13,13 @@ repository = "https://github.com/paulchernoch/hilbert"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+num-traits = "0.2.14"
 num = "0.4"
-spectral = "0.6.0"
 criterion = "0.3"
 rand = "0.8"
-quantogram = "0.4.3"
+wasm-bindgen = "0.2.79"
+js-sys = "0.3.56"
+getrandom = { version = "0.2", features = ["js"] }
 
 [[bench]]
 name = "transform_benchmarks"
@@ -26,3 +28,6 @@ harness = false
 [[bench]]
 name = "stopping"
 harness = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
