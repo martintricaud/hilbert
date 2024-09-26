@@ -380,6 +380,32 @@ pub mod fast_hilbert {
     }
 
     #[wasm_bindgen]
+    //rescale a hilbert index to a float value between 0 and 1
+    pub fn rescale_bigint_from_str(hilbert_index:String, max_index:String) -> f64 {
+        let index = BigUint::from_str_radix(&hilbert_index,10).unwrap();
+        let max = BigUint::from_str_radix(&max_index,10).unwrap();
+        if index>max {
+            return 1f64;
+        }
+        if index == BigUint::from(0u32) {
+            return 0f64
+        }
+        else {
+            let inverse = (10000000u32*max)/index;
+            let conv = BigUint::to_u32(&inverse);
+            let r =  match conv {
+                Some(val) => val as f64,
+                None => 10000000f64,
+            };
+            return 10000000f64/r;
+            // match conv {
+            //     Some(ratio) => return 10000000f64/(ratio as f64),
+            //     None => return 0f64,
+            // }
+        }
+    }
+
+    #[wasm_bindgen]
     pub fn rescale_hilbert_to_str(cursor_index:f64, cursor_max:f64, bits: usize, dimensions:usize) -> String {
         let max = BigUint::pow(&BigUint::from(2u32), (bits*dimensions).try_into().unwrap());
         let scale = 10000000000f64;
@@ -387,6 +413,7 @@ pub mod fast_hilbert {
         let res = (max * (index.floor() as u32)) / ((cursor_max * scale ) as u32);
         return BigUint::to_str_radix(&res,10);
     }
+
 
     #[wasm_bindgen]
     pub fn biguint_prod_by_f64(a: f64, b: String, precision: u32)->String{
@@ -415,7 +442,6 @@ pub mod fast_hilbert {
         return BigInt::to_str_radix(&res, 10);
     }
 
-
     #[wasm_bindgen]
     pub fn max_hilbert(bits: u32, dims: u32)->String{
         let res = BigUint::pow(&BigUint::from(2u32), (bits*dims).try_into().unwrap());
@@ -425,7 +451,7 @@ pub mod fast_hilbert {
     #[wasm_bindgen]
     pub fn biguint_clamp_from_str(a: String, b: String, c: String)->String{
         let a2 = BigInt::from_str_radix(&a,10).unwrap();
-        let b2 = BigInt::from_str_radix(&b,10).unwrap();
+        let b2 = BigInt::from_str_radix(&b,10).unwrap() - 1i32;
         let c2 = BigInt::from_str_radix(&c,10).unwrap();
         let res = if c2 < a2 { a2 } else { if c2 > b2 { b2 } else { c2 }} ;
         return BigInt::to_str_radix(&res, 10);
